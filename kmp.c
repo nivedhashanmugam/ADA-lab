@@ -1,66 +1,69 @@
 #include<stdio.h>
 #include<string.h>
-char text[100],pattern[10];
-int table[100],m,n;
-void kmptable();
-int kmp();
+char txt[100],pat[100];
+int M ,N ,lps[100],j=0,i=0;
+void computeLPSArray()
+{
+  int len = 0, i;
+  lps[0] = 0;
+  i = 1;
+  while(i < M)
+  {
+   if(pat[i] == pat[len])
+   {
+   len++;
+   lps[i] = len;
+   i++;
+   }
+   else
+   {
+   if( len != 0 )
+     len = lps[len-1];
+   else
+   {
+     lps[i] = 0;
+     i++;
+   }
+   }
+  }
+}
+void KMPSearch()
+{
+  int j=0,i=0;
+  M = strlen(pat);
+  N = strlen(txt);
+  computeLPSArray();
+  while(i < N)
+  {
+  if(pat[j] == txt[i])
+  {
+    j++;
+    i++;
+  }
+
+  if (j == M)
+  {
+    printf("Found pattern at index %d \n", i-j);
+    j = lps[j-1];
+  }
+  else if(pat[j] != txt[i])
+  {
+    if(j != 0)
+   j = lps[j-1];
+    else
+   i = i+1;
+  }
+  }
+}
+
 int main()
 {
-int match;
-printf("\nEnter the text : ");
-scanf("%s",text);
-printf("\nEnter the pattern : ");
-scanf("%s",pattern);
-m=strlen(text);
-n=strlen(pattern);
-match=kmp();
-if(match>=0)
-{
-printf("\nMatch found at position %d\n\n",match);
+ printf("\n ENTER THE TEXT    : ");
+ gets(txt);
+ printf("\n ENTER THE PATTERN : ");
+ gets(pat);
+ KMPSearch();
+ return 0;
 }
-else
-{
-printf("\nMatch not found!!!\n\n");
-}
-return 0;
-}
-int kmp()
-{
-int i;
-kmptable();
-int k=-1;
-for(i=0;i<m;i++)
-{
-while(k>-1&&pattern[k+1]!=text[i])
-{
-k=table[k];
-}
-if(text[i]==pattern[k+1])
-{
-k++;
-}
-if(k==n-1)
-{
-return i-k+1;
-}
-}
-return -1;
-}
-void kmptable()
-{
-int k=-1;
-int i=1;
-table[0]=k;
-for(i=1;i<n;i++)
-{
-while(k>-1&&pattern[k+1]!=pattern[i])
-{
-k=table[k];
-}
-if(pattern[i]==pattern[k+1])
-{
-k++;
-}
-table[i]=k;
-}
-}
+
+
